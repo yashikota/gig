@@ -6,8 +6,8 @@
 docker compose up --build
 ```
 
-Open WebUI is available at <localhost:3033>  
-Ollama API server is available at <localhost:11434>  
+Open WebUI is available at <http://localhost:3033>  
+Ollama API server is available at <http://localhost:11434>  
 
 ## Acknowledgements
 
