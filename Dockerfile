@@ -1,19 +1,26 @@
-FROM nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu22.04
-
-ENV LANG C.UTF-8
-ENV LC_ALL C.UTF-8
-ENV PATH /usr/local/nvidia/bin:/usr/local/cuda/bin:${PATH}
-ENV LD_LIBRARY_PATH /usr/local/nvidia/lib:/usr/local/nvidia/lib64
-
-RUN apt-get update && apt-get install -y \
-    python3-pip \
-    python3-dev
+ARG PYTHON_VERSION=3.12
+FROM ghcr.io/astral-sh/uv:python${PYTHON_VERSION}-bookworm-slim
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONUTF8=1 \
+    PYTHONIOENCODING="UTF-8" \
+    PYTHONBREAKPOINT="IPython.terminal.debugger.set_trace" \
+    PIP_NO_CACHE_DIR=off \
+    PIP_DISABLE_PIP_VERSION_CHECK=on \
+    UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy
 
 WORKDIR /app
 
-COPY requirements.txt /app/
-RUN pip3 install --no-cache-dir -r requirements.txt
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    uv sync --frozen --no-install-project --no-dev
 
-COPY . /app
+ADD . /app
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen --no-dev
 
-EXPOSE 8000
+ENV PATH="/app/.venv/bin:$PATH"
+
+CMD ["fastapi", "run", "/app/src/main.py"]
