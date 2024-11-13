@@ -1,4 +1,0 @@
-fastapi[all]==0.115.0
-faster-whisper==1.0.3
-torch==2.4.1
-transformers==4.45.1

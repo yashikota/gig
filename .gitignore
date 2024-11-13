@@ -30,4 +30,7 @@ models/
 # testdata
 testdata/
 
+# ollama
+.ollama/
+
 # End of https://www.toptal.com/developers/gitignore/api/go
